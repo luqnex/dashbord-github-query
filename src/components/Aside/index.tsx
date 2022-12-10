@@ -1,8 +1,10 @@
-import { ChangeEvent, Dispatch, SetStateAction } from "react";
+import { ChangeEvent } from "react";
 
 import {
+  Avatar,
   Box,
   Button,
+  Flex,
   Input,
   InputGroup,
   InputLeftElement,
@@ -11,32 +13,29 @@ import {
 } from "@chakra-ui/react";
 import { SearchIcon } from "@chakra-ui/icons";
 
-import {
-  RefetchOptions,
-  RefetchQueryFilters,
-  QueryObserverResult,
-} from "react-query";
-
 import { CardCustom } from "../Card";
 
-import { UserData } from "../../interfaces";
+import { AsideProps } from "../../interfaces";
 
-type AsideProps = {
-  filter: string;
-  user: UserData | undefined;
-  setFilter: Dispatch<SetStateAction<string>>;
-  refetch: <TPageData>(
-    options?: (RefetchOptions & RefetchQueryFilters<TPageData>) | undefined
-  ) => Promise<QueryObserverResult<UserData | undefined, unknown>>;
-};
-
-export const Aside = ({ filter, user, refetch, setFilter }: AsideProps) => {
+export const Aside = ({
+  filter,
+  userData,
+  setFilter,
+  refetchUserData,
+  refetchRepositoryData,
+}: AsideProps) => {
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     setFilter(event.target.value);
   };
 
   return (
-    <Box bg="background.aside" width="35rem" height="100%" p="3rem 1.2rem">
+    <Box
+      bg="background.aside"
+      w="30%"
+      maxW="35rem"
+      minH="100vh"
+      p="2rem 1.2rem"
+    >
       <Text mb="1.5" fontWeight="bold" fontSize="1.25rem" color="text">
         Encontrar Dev
       </Text>
@@ -65,17 +64,28 @@ export const Aside = ({ filter, user, refetch, setFilter }: AsideProps) => {
             _hover={{
               opacity: "0.9",
             }}
-            onClick={() => refetch()}
+            onClick={() => refetchUserData()}
           >
             Buscar
           </Button>
         </InputRightElement>
       </InputGroup>
-      {user?.name && (
-        <CardCustom>
-          <Text>{user.name}</Text>
-          <Text>{user.login}</Text>
-        </CardCustom>
+      {userData?.name && (
+        <Box mt="5">
+          <CardCustom onClick={() => refetchRepositoryData()}>
+            <Flex align="center" gap="1rem">
+              <Avatar src={userData.avatar_url} />
+              <Flex direction="column">
+                <Text fontWeight="bold" color="text">
+                  {userData.name}
+                </Text>
+                <Text color="green" fontSize="0.875rem">
+                  {userData.login}
+                </Text>
+              </Flex>
+            </Flex>
+          </CardCustom>
+        </Box>
       )}
     </Box>
   );

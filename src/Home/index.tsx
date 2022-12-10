@@ -6,7 +6,7 @@ import { Flex } from "@chakra-ui/react";
 
 import { api } from "../services/axios";
 
-import { UserData } from "../interfaces";
+import { RepositoryData, UserData } from "../interfaces";
 
 import { Main } from "../components/Main";
 import { Aside } from "../components/Aside";
@@ -14,27 +14,46 @@ import { Aside } from "../components/Aside";
 export const Home = () => {
   const [filter, setFilter] = useState("");
 
-  const fetchData = async () => {
+  const fetchUserData = async () => {
     if (!filter) return;
 
     const { data } = await api.get(`/users/${filter}`);
     return data as UserData;
   };
 
-  const { data, refetch } = useQuery(["user", filter], fetchData, {
-    retry: false,
-    enabled: false,
-  });
+  const fetchRepositoryData = async () => {
+    const { data } = await api.get(`/users/${userData?.login}/repos`);
+    return data as RepositoryData[];
+  };
+
+  const { data: userData, refetch: refetchUserData } = useQuery(
+    ["user", filter],
+    fetchUserData,
+    {
+      retry: false,
+      enabled: false,
+    }
+  );
+
+  const { data: repositoriesData, refetch: refetchRepositoryData } = useQuery(
+    ["repos", userData?.login],
+    fetchRepositoryData,
+    {
+      retry: false,
+      enabled: false,
+    }
+  );
 
   return (
-    <Flex w="100%" h="100vh">
+    <Flex w="100%" minH="100vh" position="relative">
       <Aside
-        user={data}
+        userData={userData}
         filter={filter}
-        refetch={refetch}
         setFilter={setFilter}
+        refetchUserData={refetchUserData}
+        refetchRepositoryData={refetchRepositoryData}
       />
-      <Main />
+      <Main userData={userData} repositories={repositoriesData} />
     </Flex>
   );
 };
