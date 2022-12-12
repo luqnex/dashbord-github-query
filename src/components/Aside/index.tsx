@@ -10,19 +10,22 @@ import {
   InputLeftElement,
   InputRightElement,
   Text,
+  Divider,
 } from "@chakra-ui/react";
 import { SearchIcon } from "@chakra-ui/icons";
 
-import { CardCustom } from "../Card";
-
 import { AsideProps } from "../../interfaces";
+
+import { CardCustom } from "../Card";
 
 export const Aside = ({
   filter,
   userData,
+  recentUserSearch,
   setFilter,
   refetchUserData,
-  refetchRepositoryData,
+  handleClickCardRecentUser,
+  handleClickCardUser,
 }: AsideProps) => {
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     setFilter(event.target.value);
@@ -70,22 +73,51 @@ export const Aside = ({
           </Button>
         </InputRightElement>
       </InputGroup>
-      {userData?.name && (
-        <Box mt="5">
-          <CardCustom onClick={() => refetchRepositoryData()}>
-            <Flex align="center" gap="1rem">
-              <Avatar src={userData.avatar_url} />
-              <Flex direction="column">
-                <Text fontWeight="bold" color="text">
-                  {userData.name}
-                </Text>
-                <Text color="green" fontSize="0.875rem">
-                  {userData.login}
-                </Text>
+      <Box h="8rem">
+        {userData?.name && (
+          <Box m="1.5rem 0 2.5rem 0">
+            <CardCustom onClick={handleClickCardUser}>
+              <Flex align="center" gap="1rem">
+                <Avatar src={userData.avatar_url} />
+                <Flex direction="column">
+                  <Text fontWeight="bold" color="text">
+                    {userData.name}
+                  </Text>
+                  <Text color="green" fontSize="0.875rem">
+                    {userData.login}
+                  </Text>
+                </Flex>
               </Flex>
-            </Flex>
-          </CardCustom>
-        </Box>
+            </CardCustom>
+          </Box>
+        )}
+      </Box>
+      {recentUserSearch.length > 0 && (
+        <>
+          <Divider />
+          <Text fontWeight="bold" color="text" mt="5">
+            Recentes
+          </Text>
+          {recentUserSearch.map((recentUserData) => (
+            <Box key={recentUserData.login} mt="5">
+              <CardCustom
+                onClick={() => handleClickCardRecentUser(recentUserData)}
+              >
+                <Flex align="center" gap="1rem">
+                  <Avatar src={recentUserData.avatar_url} />
+                  <Flex direction="column">
+                    <Text fontWeight="bold" color="text">
+                      {recentUserData.name}
+                    </Text>
+                    <Text color="green" fontSize="0.875rem">
+                      {recentUserData.login}
+                    </Text>
+                  </Flex>
+                </Flex>
+              </CardCustom>
+            </Box>
+          ))}
+        </>
       )}
     </Box>
   );
