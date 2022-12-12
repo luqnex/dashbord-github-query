@@ -13,6 +13,7 @@ import { Aside } from "../components/Aside";
 
 export const Home = () => {
   const [filter, setFilter] = useState("");
+  const [jsonColors, setJsonColors] = useState<any>();
   const [selectedUser, setSelectedUser] = useState({} as UserData);
   const [recentUserSearch, setRecentUserSearch] = useState<UserData[]>([]);
 
@@ -46,7 +47,11 @@ export const Home = () => {
     }
   );
 
-  const { data: repositoriesData, refetch: refetchRepositoryData } = useQuery(
+  const {
+    data: repositoriesData,
+    refetch: refetchRepositoryData,
+    isLoading: isLoadingRepository,
+  } = useQuery(
     ["repos", selectedUser?.login],
     () => fetchRepositoryData(userData?.login),
     {
@@ -64,8 +69,12 @@ export const Home = () => {
     }
   );
 
+  const handleExistsUserInRecentList = () => {
+    return recentUserSearch.find((item) => item.login === userData?.login);
+  };
+
   const handleClickCardUser = () => {
-    if (userData) {
+    if (userData && !handleExistsUserInRecentList()) {
       setRecentUserSearch((old) => [...old, userData]);
       setSelectedUser(userData);
       refetchSelectedUserData();
@@ -76,6 +85,19 @@ export const Home = () => {
   const handleClickCardRecentUser = (userData: UserData) => {
     setSelectedUser(userData);
   };
+
+  useEffect(() => {
+    const fetchJsonLangColors = async () => {
+      const res = await fetch("github-lang-colors.json", {
+        headers: {
+          Accept: "application/json",
+        },
+      });
+      const data = await res.json();
+      setJsonColors(data);
+    };
+    fetchJsonLangColors();
+  }, []);
 
   useEffect(() => {
     if (selectedUser?.login) {
@@ -94,11 +116,14 @@ export const Home = () => {
         setSelectedUser={setSelectedUser}
         refetchUserData={refetchUserData}
         handleClickCardUser={handleClickCardUser}
-        refetchRepositoryData={refetchRepositoryData}
         handleClickCardRecentUser={handleClickCardRecentUser}
-        refetchRepositoryRecentData={refetchRepositoryRecentData}
       />
-      <Main userData={selectedUserData} repositories={repositoriesData} />
+      <Main
+        jsonColors={jsonColors}
+        userData={selectedUserData}
+        repositories={repositoriesData}
+        isLoadingRepository={isLoadingRepository}
+      />
     </Flex>
   );
 };

@@ -31,6 +31,10 @@ export const Aside = ({
     setFilter(event.target.value);
   };
 
+  const handleGetLastFiveUserData = () => {
+    return [...recentUserSearch].reverse().slice(0, 5);
+  };
+
   return (
     <Box
       bg="background.aside"
@@ -98,7 +102,7 @@ export const Aside = ({
           <Text fontWeight="bold" color="text" mt="5">
             Recentes
           </Text>
-          {recentUserSearch.map((recentUserData) => (
+          {handleGetLastFiveUserData().map((recentUserData) => (
             <Box key={recentUserData.login} mt="5">
               <CardCustom
                 onClick={() => handleClickCardRecentUser(recentUserData)}

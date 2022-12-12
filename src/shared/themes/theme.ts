@@ -11,5 +11,6 @@ export const theme = extendTheme({
     text: "#1C255C",
     green: "#3A8E3D",
     textGray: "rgba(0, 0, 0, 0.5)",
+    textGrayMain: "rgba(26, 35, 91, 0.49)",
   },
 });

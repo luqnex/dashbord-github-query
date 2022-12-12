@@ -15,6 +15,7 @@ export type UserData = {
   public_repos: number;
   following: number;
   followers: number;
+  html_url: string;
 };
 
 export type RepositoryData = {
@@ -25,9 +26,12 @@ export type RepositoryData = {
   description: string;
   created_at: Date;
   updated_at: Date;
+  svn_url: string;
 };
 
 export type MainProps = {
+  jsonColors: any;
+  isLoadingRepository: boolean;
   userData: UserData | undefined;
   repositories: RepositoryData[] | undefined;
 };
@@ -36,18 +40,11 @@ export type AsideProps = {
   filter: string;
   recentUserSearch: UserData[];
   userData: UserData | undefined;
+  setFilter: Dispatch<SetStateAction<string>>;
   handleClickCardUser: () => void;
   handleClickCardRecentUser: (userData: UserData) => void;
-
-  setFilter: Dispatch<SetStateAction<string>>;
   setSelectedUser: Dispatch<SetStateAction<UserData>>;
   refetchUserData: <TPageData>(
     options?: (RefetchOptions & RefetchQueryFilters<TPageData>) | undefined
   ) => Promise<QueryObserverResult<UserData | undefined, unknown>>;
-  refetchRepositoryData: <TPageData>(
-    options?: (RefetchOptions & RefetchQueryFilters<TPageData>) | undefined
-  ) => Promise<QueryObserverResult<RepositoryData[] | undefined, unknown>>;
-  refetchRepositoryRecentData: <TPageData>(
-    options?: (RefetchOptions & RefetchQueryFilters<TPageData>) | undefined
-  ) => Promise<QueryObserverResult<RepositoryData[], unknown>>;
 };
